@@ -8,68 +8,83 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 
 function App() {
- 
-  const[cartNum, setCartNum]= useState(0);
-  const[cartProducts, setCartProducts]= useState([]);
-  const[products]= useState([
+  const [cartNum, setCartNum] = useState(0);
+  const [cartProducts, setCartProducts] = useState([]);
+  const [products, setProducts] = useState([
     {
       id: 1,
-      title: "Audi A7",
-      description:
-        "Cena: 70.000e",
+      title: "BMW 320d",
+      url: "https://freepngimg.com/thumb/car/1-2-car-png-picture.png",
+      price: 18000.00,
       amount: 0,
     },
     {
       id: 2,
-      title: "BMW X3",
-      description:
-        "Cena: 30.000e",
+      title: "Mercedes ML",
+      url: "https://img.cppng.com/download/2020-06/4-2-car-png-hd.png",
+      price: 55000.00,
       amount: 0,
     },
     {
       id: 3,
-      title: "Mercedes S600",
-      description:
-        "Cena: 110.000e",
+      title: "Mercedes E220",
+      url: "https://i.pinimg.com/originals/4b/d6/db/4bd6db7c593e9c693f2ae88d7d87f124.png",
+      price: 22000.00,
       amount: 0,
     },
   ]);
 
-  function refreshCart(){
-    let newProducts= products.filter((prod)=>prod.amount>0);
+  function refreshCart() {
+    let newProducts = products.filter((prod) => prod.amount > 0);
     setCartProducts(newProducts);
   }
-
-  function addProduct(title, id){
-    // console.log("Dodat je proizvod "+title+" koji ima id "+id);
+  function addProduct(title, id) {
     setCartNum(cartNum + 1);
-    products.forEach((prod)=>{
-      if(prod.id === id) {
+    products.forEach((prod) => {
+      if (prod.id === id) {
         prod.amount++;
       }
     });
     refreshCart();
   }
-  function removeProduct(title, id){
-    // console.log("Obrisan je proizvod "+title+" koji ima id "+id);
-    setCartNum(cartNum - 1);
-    products.forEach((prod)=>{
-      if(prod.id === id) {
-        prod.amount--;
+  function removeProduct(title, id) {
+    products.forEach((prod) => {
+      if (prod.id === id) {
+        if (prod.amount > 0) {
+          prod.amount--;
+          setCartNum(cartNum - 1);
+        }
       }
     });
     refreshCart();
   }
 
-
   return (
     <BrowserRouter className="App">
-      <MenuBar cartNum={cartNum}></MenuBar>
       <Routes>
-        <Route path='/' element={<Shop products={products} onAdd={addProduct} onRemove={removeProduct}/>}
-      />
-      <Route path='/cart' element={<Cart products={cartProducts}/>}
-      />
+        <Route
+          path="/shop"
+          element={
+            <>
+              <MenuBar cartNum={cartNum} isHome={0} isShop={1} inCart={0} />,
+              <Shop
+                products={products}
+                onAdd={addProduct}
+                onRemove={removeProduct}
+              />
+            </>
+          }
+        />
+        <Route path="/" element={<MenuBar cartNum={cartNum} isHome={1} />} />
+        <Route
+          path="/cart"
+          element={
+            <>
+              <MenuBar cartNum={cartNum} isHome={0} inCart={1} isShop={0}/>,
+              <Cart products={cartProducts} onRemove={removeProduct} />
+            </>
+          }
+        />
       </Routes>
     </BrowserRouter>
   );
